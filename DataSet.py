@@ -181,8 +181,6 @@ class dataset():
                 self.train_set[self.train_num]['flag']=self._flag2id(flag)
                 self.train_num += 1
 
-            self.class_num=len(self.label_count)
-
         with open('./data/pickle/train.pkl','wb') as f:
             pickle.dump(self.train_set,f)
 
@@ -206,6 +204,21 @@ class dataset():
                 self.valid_set[self.valid_num]['end_id']=int(end_entity[0])
                 self.valid_set[self.valid_num]['end_length']=int(end_entity[1])
                 self.valid_set[self.valid_num]['end_sentence']=self._word2id(end_sentence)
+                self.valid_set[self.valid_num]['start_sentence_self_id'] = self._pos_id(start_sentence,
+                                                                                        int(start_entity[0]),
+                                                                                        int(start_entity[1]))
+                # print(self.train_set[self.train_num]['start_sentence_self_id'])
+                self.valid_set[self.valid_num]['end_sentence_self_id'] = self._pos_id(end_sentence,
+                                                                                      int(end_entity[0]),
+                                                                                      int(end_entity[1]))
+                self.valid_set[self.valid_num]['start_sentence_cross_id'], \
+                self.valid_set[self.valid_num]['end_sentence_cross_id'] = \
+                    self._cross_id(start_sentence, end_sentence,
+                                   int(start_entity[2]), int(end_entity[2]),
+                                   int(start_entity[0]), int(start_entity[0]))
+
+                self.valid_set[self.valid_num]['start_sentence_real_length'] = len(start_sentence)
+                self.valid_set[self.valid_num]['end_sentence_real_length'] = len(end_sentence)
                 self.valid_set[self.valid_num]['flag']=self._flag2id(flag)
                 self.valid_num += 1
 
@@ -228,6 +241,21 @@ class dataset():
                 self.test_set[self.test_num]['end_id']=int(end_entity[0])
                 self.test_set[self.test_num]['end_length']=int(end_entity[1])
                 self.test_set[self.test_num]['end_sentence']=self._flag2id(end_sentence)
+                self.test_set[self.test_num]['start_sentence_self_id'] = self._pos_id(start_sentence,
+                                                                                      int(start_entity[0]),
+                                                                                      int(start_entity[1]))
+                # print(self.train_set[self.train_num]['start_sentence_self_id'])
+                self.test_set[self.test_num]['end_sentence_self_id'] = self._pos_id(end_sentence,
+                                                                                      int(end_entity[0]),
+                                                                                      int(end_entity[1]))
+                self.test_set[self.test_num]['start_sentence_cross_id'], \
+                self.test_set[self.test_num]['end_sentence_cross_id'] = \
+                    self._cross_id(start_sentence, end_sentence,
+                                   int(start_entity[2]), int(end_entity[2]),
+                                   int(start_entity[0]), int(start_entity[0]))
+
+                self.test_set[self.test_num]['start_sentence_real_length'] = len(start_sentence)
+                self.test_set[self.test_num]['end_sentence_real_length'] = len(end_sentence)
                 self.test_num += 1
         with open('./data/pickle/test.pkl','wb') as f:
             pickle.dump(self.test_set,f)
@@ -255,11 +283,19 @@ class dataset():
         with open('./data/pickle/label.pkl','rb') as f:
             self.label_count=pickle.load(f)
 
+    def load_init(self):
+        self.class_num=len(self.label_count)
+        self.train_num=len(self.train_set)
+        self.valid_num=len(self.valid_set)
+        self.test_num=len(self.test_set)
 
 
-    def batch_data_init(self,batch_size):
+    def batch_data_init(self,batch_size,mode='train'):
         # print(self.train_set)
-        self.feed_data=self.train_set
+        if mode=='train':
+            self.feed_data=self.train_set
+        if mode=='valid':
+            self.feed_data=self.valid_set
         self.is_break=False
         self.each_type_data={}
         self.each_type_data_num={}
@@ -286,14 +322,20 @@ class dataset():
 
 
         # shuffle
-        for key in self.train_set:
-            self.each_type_data[self.train_set[key]['flag']].append(key)
-        for key in self.each_type_data.keys():
-            random.shuffle(self.each_type_data[key])
+        if mode=='train':
+            for key in self.train_set:
+                self.each_type_data[self.train_set[key]['flag']].append(key)
+            for key in self.each_type_data.keys():
+                random.shuffle(self.each_type_data[key])
+        if mode=='valid':
+            for key in self.valid_set:
+                self.each_type_data[self.valid_set[key]['flag']].append(key)
+            for key in self.each_type_data.keys():
+                random.shuffle(self.each_type_data[key])
 
 
 
-    def each_batch(self,batch_size):
+    def each_batch(self):
         batch_data={}
         batch_data['start_sentence']=[]
         batch_data['end_sentence']=[]
