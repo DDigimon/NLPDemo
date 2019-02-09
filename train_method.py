@@ -41,16 +41,16 @@ class train_method():
 
 
     def feed_method(self,batch_data):
-        feed_dic={self.model.sentence1:batch_data['start_sentence'],
-                  self.model.sentence2:batch_data['end_sentence'],
+        feed_dic={self.model.sentence1_placeholder:batch_data['start_sentence'],
+                  self.model.sentence2_placeholder:batch_data['end_sentence'],
 
-                  self.model.pos1:batch_data['start_sentence_self_id'],
-                  self.model.pos2:batch_data['end_sentence_self_id'],
+                  self.model.pos1_placeholder:batch_data['start_sentence_self_id'],
+                  self.model.pos2_placeholder:batch_data['end_sentence_self_id'],
 
-                  self.model.pos1_cross:batch_data['start_sentence_cross_id'],
-                  self.model.pos2_cross:batch_data['end_sentence_cross_id'],
+                  self.model.pos1_cross_placeholder:batch_data['start_sentence_cross_id'],
+                  self.model.pos2_cross_placeholder:batch_data['end_sentence_cross_id'],
 
-                  self.model.label:batch_data['flag']}
+                  self.model.label_placeholder:batch_data['flag']}
         return feed_dic
 
 

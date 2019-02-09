@@ -20,27 +20,26 @@ class RC_model():
         self.class_num=class_num
 
     def _placehold_init(self):
-        self.sentence1=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_sentence1')
-        self.sentence2=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_sentence2')
-        self.pos1=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_pos1')
-        self.pos2=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_pos2')
-        self.pos1_cross=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_cross_pos1')
-        self.pos2_cross=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_cross_pos2')
-        print(self.sentence1,self.pos1)
-        self.label=tf.placeholder(dtype=tf.int32,shape=[None,self.class_num],name='label_holder')
+        self.sentence1_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_sentence1')
+        self.sentence2_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_sentence2')
+        self.pos1_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_pos1')
+        self.pos2_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_pos2')
+        self.pos1_cross_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_cross_pos1')
+        self.pos2_cross_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_cross_pos2')
+        self.label_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.class_num],name='label_holder')
 
     def _embedding(self):
-        self.sentence1_embedding=Embedding.word_embedding(self.sentence1,self.word_vec_mat,self.embedding_size)
-        self.sentence2_embedding=Embedding.word_embedding(self.sentence2,self.word_vec_mat,self.embedding_size)
+        self.sentence1_embedding=Embedding.word_embedding(self.sentence1_placeholder,self.word_vec_mat,self.embedding_size)
+        self.sentence2_embedding=Embedding.word_embedding(self.sentence2_placeholder,self.word_vec_mat,self.embedding_size)
 
-        # self.pos1=Embedding.pos_embedding(self.pos1,self.pos_tot,self.pos_embedding_size)
-        # self.pos2=Embedding.pos_embedding(self.pos2,self.pos_tot,self.pos_embedding_size)
-        #
-        # self.pos1_cross=Embedding.pos_embedding(self.pos1_cross,self.pos_tot,self.pos_embedding_size)
-        # self.pos2_cross=Embedding.pos_embedding(self.pos2_cross,self.pos_tot,self.pos_embedding_size)
-        #
-        # self.sentence1_embedding=tf.concat([self.sentence1_embedding,self.pos1,self.pos1_cross],axis=-1)
-        # self.sentence2_embedding=tf.concat([self.sentence2_embedding,self.pos2,self.pos2_cross],axis=-1)
+        self.pos1=Embedding.pos_embedding(self.pos1_placeholder,self.pos_tot,self.pos_embedding_size)
+        self.pos2=Embedding.pos_embedding(self.pos2_placeholder,self.pos_tot,self.pos_embedding_size)
+
+        self.pos1_cross=Embedding.pos_embedding(self.pos1_cross_placeholder,self.pos_tot,self.pos_embedding_size)
+        self.pos2_cross=Embedding.pos_embedding(self.pos2_cross_placeholder,self.pos_tot,self.pos_embedding_size)
+
+        self.sentence1_embedding=tf.concat([self.sentence1_embedding,self.pos1,self.pos1_cross],axis=-1)
+        self.sentence2_embedding=tf.concat([self.sentence2_embedding,self.pos2,self.pos2_cross],axis=-1)
 
 
     def _encode(self):
@@ -52,7 +51,7 @@ class RC_model():
     def _result(self):
         self.classification_result=Classification.logits_classification\
             (self.text_sentence,self.hidden_size,self.class_num,mode='train')
-        self.loss=LossCount.loss_count(self.classification_result,self.label)
+        self.loss=LossCount.loss_count(self.classification_result,self.label_placeholder)
 
     def _optimizer(self):
         self.train_op=Optimizer.optimizer(self.learning_rate,self.loss)

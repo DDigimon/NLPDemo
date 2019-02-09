@@ -23,7 +23,7 @@ def word_embedding(words,word_vec,embedding_size,var_scope=None,trainable=False,
         else:
             word_embedding=tf.concat([undefined_space,word_embedding,unk_embedding],0)
         output=tf.nn.embedding_lookup(word_embedding,words)
-        print(output)
+        print(words,word_embedding)
 
         return output
 
@@ -37,8 +37,10 @@ def pos_embedding(pos_list,pos_tot,pos_embedding_size,var_scope=None):
     :return: tf variable of sentence id embedding
     '''
     with tf.variable_scope(var_scope or 'pos_embedding',reuse=tf.AUTO_REUSE):
-        pos_embedding=tf.get_variable('pos_embedding',[pos_tot+1,pos_embedding_size],
-                                      initializer=tfc.layers.xavier_initializer(),dtype=tf.float64)
-        output=tf.nn.embedding_lookup(pos_embedding,pos_list)
-        print(output)
+        pos_embedding_scope=tf.get_variable('pos_embedding',[pos_tot+1,pos_embedding_size],dtype=tf.float64,
+                                            initializer=tfc.layers.xavier_initializer())
+
+        print(pos_list,pos_embedding_scope)
+
+        output=tf.nn.embedding_lookup(pos_embedding_scope,pos_list)
         return output
