@@ -315,6 +315,7 @@ class dataset():
             self.batch_id[key]=0
             self.each_type_data[key]=[]
 
+
         # count real batch num
         self.real_batch=int(len(self.feed_data)/self.real_batch_num)
         if len(self.feed_data)%self.real_batch_num!=0:
@@ -346,18 +347,21 @@ class dataset():
         batch_data['end_sentence_cross_id']=[]
         batch_list=[]
 
+
         for id,key in enumerate(self.each_batch_flag_num.keys()):
             get_list=[]
-            if self.batch_id[key]+self.each_batch_flag_num[key]>len(self.each_type_data[key]):
+            if self.batch_id[key]+self.each_batch_flag_num[key]>=len(self.each_type_data[key]):
                 res_num=len(self.each_type_data[key])-self.batch_id[key]
                 get_list=random.sample(self.each_type_data[key],res_num)
                 self.each_batch_flag_num[key]-=res_num
+                self.batch_id[key]=0
                 self.is_break=True
             for idx in range(self.batch_id[key],self.batch_id[key]+self.each_batch_flag_num[key]):
                 get_list.append(self.each_type_data[key][idx])
 
             self.batch_id[key]+=self.each_batch_flag_num[key]
             batch_list.extend(get_list)
+
 
         random.shuffle(batch_list)
 
@@ -383,17 +387,25 @@ class dataset():
 
         return batch_data
 
-
-# data=dataset(100)
-# data.init_data()
-# data.read_wordvec()
+data=dataset(100)
+# # # data.init_data()
+# # # data.read_wordvec()
 # data.read_train_data()
+# data.read_valid_data()
+# print(data.train_num,data.valid_num)
+data.load_data()
+data.load_init()
 # # print(data.train_set)
-# data.batch_data_init(32)
-# while True:
-#     data.each_batch(32)
-#     if data.is_break==True:
-#         break
+
+count=0
+for _ in range(1):
+    data.batch_data_init(32,mode='valid')
+    while True:
+        data.each_batch()
+        if data.is_break==True:
+            break
+        count+=1
+print(count)
 # data.read_valid_data()
 # data.read_test_data()
 # data.save_data()

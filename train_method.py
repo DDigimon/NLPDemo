@@ -49,10 +49,13 @@ class train_method():
             real_batch_num=self.data.real_batch
             for _ in tqdm(range(real_batch_num)):
                 batch_data=self.data.each_batch()
+                # print(self.data.is_break)
+
                 feed_dic=self.feed_method(batch_data)
 
                 _,loss=self.sess.run([self.model.train_op,self.model.loss],feed_dict=feed_dic)
                 train_loss+=loss
+                if self.data.is_break == True:break
             valid_loss=self.evaluate()
 
             print('train loss:',train_loss,'valid loss',valid_loss)
@@ -69,11 +72,13 @@ class train_method():
         eval_loss=0.
         self.data.batch_data_init(self.batch_size,mode='valid')
         real_batch_num=self.data.real_batch
-        for _ in range(real_batch_num):
+        while True:
             batch_data=self.data.each_batch()
+
             feed_dic=self.feed_method(batch_data)
             loss=self.sess.run(self.model.loss,feed_dict=feed_dic)
             eval_loss+=loss
+            if self.data.is_break == True: break
         if real_batch_num!=0:
             eval_loss/=float(real_batch_num)
         return eval_loss
@@ -108,6 +113,9 @@ model.build_model()
 
 data=dataset(max_length)
 
+# data.load_data()
+# data.load_init()
+# data.read_valid_data()
 data.load_data()
 data.load_init()
 
