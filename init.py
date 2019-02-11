@@ -197,10 +197,10 @@ def GenerateTrainSet(ori_path,aim_merge_path):
                 for i in documents:
                     fin.write(i)
 
-def GenerateTestSet():
-    root = './data/test2/'
+def GenerateTestSet(ori_path,aim_merge_path):
+    root = ori_path
     file_list = []
-    with open('./data/origin_data/test.txt', 'w', encoding='utf-8') as fin:
+    with open(aim_merge_path, 'w', encoding='utf-8') as fin:
         for files in os.listdir(root):
             files = files.split('.')[0]
             if files not in file_list:

@@ -55,7 +55,8 @@ class train_method():
 
                 _,loss=self.sess.run([self.model.train_op,self.model.loss],feed_dict=feed_dic)
                 train_loss+=loss
-                if self.data.is_break == True:break
+
+            if real_batch_num!=0:train_loss/=float(real_batch_num)
             valid_loss=self.evaluate()
 
             print('train loss:',train_loss,'valid loss',valid_loss)
@@ -72,13 +73,13 @@ class train_method():
         eval_loss=0.
         self.data.batch_data_init(self.batch_size,mode='valid')
         real_batch_num=self.data.real_batch
-        while True:
+        for _ in real_batch_num:
             batch_data=self.data.each_batch()
 
             feed_dic=self.feed_method(batch_data)
             loss=self.sess.run(self.model.loss,feed_dict=feed_dic)
             eval_loss+=loss
-            if self.data.is_break == True: break
+
         if real_batch_num!=0:
             eval_loss/=float(real_batch_num)
         return eval_loss

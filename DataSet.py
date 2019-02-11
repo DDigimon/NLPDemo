@@ -109,6 +109,7 @@ class dataset():
         # for files in os.listdir(self.valid_file):
         #     print(files)
         init.GenerateTrainSet(self.test_ori_file,self.test_file)
+        init.GenerateTestSet(self.test_ori_file,self.test_file)
     # def match_num(self,string):
     #
     def read_wordvec(self):
@@ -240,7 +241,7 @@ class dataset():
                 self.test_set[self.test_num]['start_sentence']=self._word2id(start_sentence)
                 self.test_set[self.test_num]['end_id']=int(end_entity[0])
                 self.test_set[self.test_num]['end_length']=int(end_entity[1])
-                self.test_set[self.test_num]['end_sentence']=self._flag2id(end_sentence)
+                self.test_set[self.test_num]['end_sentence']=self._word2id(end_sentence)
                 self.test_set[self.test_num]['start_sentence_self_id'] = self._pos_id(start_sentence,
                                                                                       int(start_entity[0]),
                                                                                       int(start_entity[1]))
