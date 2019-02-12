@@ -15,6 +15,6 @@ def logits_classification(input_layer,hidden_size,class_num,mode='test',var_scop
         logits=tf.layers.dense(result_dense,class_num,name='d2')
         pred = tf.argmax(tf.nn.softmax(logits), axis=1)
         if mode=='test':
-            return pred
+            return logits,pred
         else:
             return logits

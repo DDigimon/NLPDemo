@@ -49,6 +49,7 @@ class train_method():
             real_batch_num=self.data.real_batch
             for _ in tqdm(range(real_batch_num)):
                 batch_data=self.data.each_batch()
+                # print(batch_data)
                 # print(self.data.is_break)
 
                 feed_dic=self.feed_method(batch_data)
@@ -73,7 +74,7 @@ class train_method():
         eval_loss=0.
         self.data.batch_data_init(self.batch_size,mode='valid')
         real_batch_num=self.data.real_batch
-        for _ in real_batch_num:
+        for _ in range(real_batch_num):
             batch_data=self.data.each_batch()
 
             feed_dic=self.feed_method(batch_data)

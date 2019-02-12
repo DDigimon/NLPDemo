@@ -9,6 +9,7 @@ class dataset():
 
         self.train_file='./data/train.txt'
         self.test_file='./data/test.txt'
+        self.test_test_file='./data/test_test.txt'
         self.valid_file='./data/valid.txt'
         self.train_ori_file='./ori_data/train/'
         self.test_ori_file='./ori_data/tmp_test/'
@@ -109,7 +110,7 @@ class dataset():
         # for files in os.listdir(self.valid_file):
         #     print(files)
         init.GenerateTrainSet(self.test_ori_file,self.test_file)
-        init.GenerateTestSet(self.test_ori_file,self.test_file)
+        init.GenerateTestSet(self.test_ori_file,self.test_test_file)
     # def match_num(self,string):
     #
     def read_wordvec(self):
@@ -388,25 +389,28 @@ class dataset():
 
         return batch_data
 
-data=dataset(100)
-# # # data.init_data()
-# # # data.read_wordvec()
+# data=dataset(100)
+# # # # data.init_data()
+# # # # data.read_wordvec()
+# # data.read_train_data()
+# # data.read_valid_data()
+# # print(data.train_num,data.valid_num)
+# data.init_data()
 # data.read_train_data()
-# data.read_valid_data()
-# print(data.train_num,data.valid_num)
-data.load_data()
-data.load_init()
+# data.read_test_data()
+# print(data.label_count)
 # # print(data.train_set)
 
-count=0
-for _ in range(1):
-    data.batch_data_init(32,mode='valid')
-    while True:
-        data.each_batch()
-        if data.is_break==True:
-            break
-        count+=1
-print(count)
+# count=0
+# for _ in range(1):
+#     data.batch_data_init(32,mode='train')
+#     print(data.each_batch())
+#     while True:
+#         data.each_batch()
+#         if data.is_break==True:
+#             break
+#         count+=1
+# print(count)
 # data.read_valid_data()
 # data.read_test_data()
 # data.save_data()
