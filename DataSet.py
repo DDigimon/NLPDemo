@@ -305,6 +305,7 @@ class dataset():
         self.each_type_data_num={}
         self.batch_id={}
         self.real_batch_num=0
+        self.idx=0
         self.real_batch=0
         self.each_batch_flag_num = {}
 
@@ -319,6 +320,9 @@ class dataset():
                 self.real_batch_num+=self.each_batch_flag_num[key]
                 self.batch_id[key]=0
                 self.each_type_data[key]=[]
+        else:
+            # useless?
+            self.real_batch_num=batch_size
 
 
         # shuffle
@@ -366,6 +370,14 @@ class dataset():
 
                 self.batch_id[key]+=self.each_batch_flag_num[key]
                 batch_list.extend(get_list)
+        else:
+            print(self.real_batch_num)
+            for _ in range(self.real_batch_num):
+                batch_list.append(self.idx)
+                self.idx+=1
+                if self.idx>=self.test_num:
+                    self.idx=0
+                    self.is_break=True
 
 
         random.shuffle(batch_list)
@@ -394,28 +406,24 @@ class dataset():
 
         return batch_data
 
-# data=dataset(100)
-# # # # data.init_data()
-# # # # data.read_wordvec()
-# # data.read_train_data()
-# # data.read_valid_data()
-# # print(data.train_num,data.valid_num)
-# data.init_data()
+data=dataset(100)
+# # # data.init_data()
+# # # data.read_wordvec()
 # data.read_train_data()
-# data.read_test_data()
-# print(data.label_count)
+# data.read_valid_data()
+# print(data.train_num,data.valid_num)
+data.load_data()
+data.load_init()
 # # print(data.train_set)
 
 # count=0
-# for _ in range(1):
-#     data.batch_data_init(32,mode='train')
-#     print(data.each_batch())
-#     while True:
-#         data.each_batch()
-#         if data.is_break==True:
-#             break
-#         count+=1
-# print(count)
+for _ in range(1):
+    data.batch_data_init(32,mode='test')
+    # print(data.each_batch())
+    while True:
+        data.each_batch(mode='test')
+        if data.is_break==True:
+            break
 # data.read_valid_data()
 # data.read_test_data()
 # data.save_data()
