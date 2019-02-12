@@ -298,6 +298,8 @@ class dataset():
             self.feed_data=self.train_set
         if mode=='valid':
             self.feed_data=self.valid_set
+        if mode=='test':
+            self.feed_data=self.test_set
         self.is_break=False
         self.each_type_data={}
         self.each_type_data_num={}
@@ -307,21 +309,16 @@ class dataset():
         self.each_batch_flag_num = {}
 
         # for unbalance data
-        for label_key in self.label_count:
-            key=self._flag2id(label_key)
-            self.each_batch_flag_num[key] = round(self.label_count[label_key]['value'] / self.train_num * batch_size)
-            if self.each_batch_flag_num[key] == 0:
-                self.each_batch_flag_num[key] = 1
+        if mode!='test':
+            for label_key in self.label_count:
+                key=self._flag2id(label_key)
+                self.each_batch_flag_num[key] = round(self.label_count[label_key]['value'] / self.train_num * batch_size)
+                if self.each_batch_flag_num[key] == 0:
+                    self.each_batch_flag_num[key] = 1
 
-            self.real_batch_num+=self.each_batch_flag_num[key]
-            self.batch_id[key]=0
-            self.each_type_data[key]=[]
-
-
-        # count real batch num
-        self.real_batch=int(len(self.feed_data)/self.real_batch_num)
-        if len(self.feed_data)%self.real_batch_num!=0:
-            self.real_batch+=1
+                self.real_batch_num+=self.each_batch_flag_num[key]
+                self.batch_id[key]=0
+                self.each_type_data[key]=[]
 
 
         # shuffle
@@ -337,8 +334,14 @@ class dataset():
                 random.shuffle(self.each_type_data[key])
 
 
+        # count real batch num
+        self.real_batch = int(len(self.feed_data) / self.real_batch_num)
+        if len(self.feed_data) % self.real_batch_num != 0:
+            self.real_batch += 1
 
-    def each_batch(self):
+
+
+    def each_batch(self,mode='train'):
         batch_data={}
         batch_data['start_sentence']=[]
         batch_data['end_sentence']=[]
@@ -349,20 +352,20 @@ class dataset():
         batch_data['end_sentence_cross_id']=[]
         batch_list=[]
 
+        if mode!='test':
+            for id,key in enumerate(self.each_batch_flag_num.keys()):
+                get_list=[]
+                if self.batch_id[key]+self.each_batch_flag_num[key]>=len(self.each_type_data[key]):
+                    res_num=len(self.each_type_data[key])-self.batch_id[key]
+                    get_list=random.sample(self.each_type_data[key],res_num)
+                    self.each_batch_flag_num[key]-=res_num
+                    self.batch_id[key]=0
+                    self.is_break=True
+                for idx in range(self.batch_id[key],self.batch_id[key]+self.each_batch_flag_num[key]):
+                    get_list.append(self.each_type_data[key][idx])
 
-        for id,key in enumerate(self.each_batch_flag_num.keys()):
-            get_list=[]
-            if self.batch_id[key]+self.each_batch_flag_num[key]>=len(self.each_type_data[key]):
-                res_num=len(self.each_type_data[key])-self.batch_id[key]
-                get_list=random.sample(self.each_type_data[key],res_num)
-                self.each_batch_flag_num[key]-=res_num
-                self.batch_id[key]=0
-                self.is_break=True
-            for idx in range(self.batch_id[key],self.batch_id[key]+self.each_batch_flag_num[key]):
-                get_list.append(self.each_type_data[key][idx])
-
-            self.batch_id[key]+=self.each_batch_flag_num[key]
-            batch_list.extend(get_list)
+                self.batch_id[key]+=self.each_batch_flag_num[key]
+                batch_list.extend(get_list)
 
 
         random.shuffle(batch_list)
@@ -383,7 +386,9 @@ class dataset():
             batch_data['start_sentence_cross_id'].append(self.feed_data[id]['start_sentence_cross_id'][:self.max_length])
             batch_data['end_sentence_cross_id'].append(self.feed_data[id]['end_sentence_cross_id'][:self.max_length])
 
-            batch_data['flag'].append(self._flag_list(self.feed_data[id]['flag']))
+            if mode!='test':
+                batch_data['flag'].append(self._flag_list(self.feed_data[id]['flag']))
+
         for key in batch_data:
             batch_data[key]=np.array(batch_data[key])
 

@@ -20,12 +20,12 @@ class RC_model():
         self.class_num=class_num
 
     def _placehold_init(self):
-        self.sentence1_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_sentence1')
-        self.sentence2_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_sentence2')
-        self.pos1_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_pos1')
-        self.pos2_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_pos2')
-        self.pos1_cross_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_cross_pos1')
-        self.pos2_cross_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.max_length],name='input_cross_pos2')
+        self.sentence1_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,None],name='input_sentence1')
+        self.sentence2_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,None],name='input_sentence2')
+        self.pos1_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,None],name='input_pos1')
+        self.pos2_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,None],name='input_pos2')
+        self.pos1_cross_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,None],name='input_cross_pos1')
+        self.pos2_cross_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,None],name='input_cross_pos2')
         self.label_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,self.class_num],name='label_holder')
 
     def _embedding(self):
