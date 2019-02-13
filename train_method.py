@@ -14,7 +14,7 @@ class train_method():
         self.max_patient=max_patient
         self.model_save_path=model_save_path
 
-        self.train_config()
+        self.session_config()
 
     def feed_method(self,batch_data):
         feed_dic={self.model.sentence1_placeholder:batch_data['start_sentence'],
@@ -29,7 +29,7 @@ class train_method():
                   self.model.label_placeholder:batch_data['flag']}
         return feed_dic
 
-    def train_config(self):
+    def session_config(self):
         self.gpu_option=tf.GPUOptions(visible_device_list='0', allow_growth=True)
         self.sess=tf.Session(config=tf.ConfigProto(gpu_options=self.gpu_option))
 
@@ -84,8 +84,6 @@ class train_method():
         if real_batch_num!=0:
             eval_loss/=float(real_batch_num)
         return eval_loss
-
-
 
 
 

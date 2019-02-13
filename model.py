@@ -4,7 +4,7 @@ from PredictMethod import Classification,Jugde,LossCount,Optimizer
 
 class RC_model():
     def __init__(self,max_length,embedding_size,pos_tot,pos_embedding_size,word_vec_mat,filter_size,filter_num,
-                 hidden_size,class_num,learning_rate):
+                 hidden_size,class_num,learning_rate,mode='train'):
         self.pos_tot=pos_tot
         self.pos_embedding_size=pos_embedding_size
         self.embedding_size=embedding_size
@@ -18,6 +18,8 @@ class RC_model():
         self.learning_rate=learning_rate
 
         self.class_num=class_num
+
+        self.mode=mode
 
     def _placehold_init(self):
         self.sentence1_placeholder=tf.placeholder(dtype=tf.int32,shape=[None,None],name='input_sentence1')
@@ -49,8 +51,8 @@ class RC_model():
         self.text_sentence=ConvLayer.text_conv(self.text_sentence,self.filter_size,self.filter_num)
 
     def _result(self):
-        self.classification_result=Classification.logits_classification\
-            (self.text_sentence,self.hidden_size,self.class_num,mode='train')
+        self.classification_result,self.pred=Classification.logits_classification\
+            (self.text_sentence,self.hidden_size,self.class_num,mode=self.mode)
         self.loss=LossCount.loss_count(self.classification_result,self.label_placeholder)
 
     def _optimizer(self):

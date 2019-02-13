@@ -371,8 +371,7 @@ class dataset():
                 self.batch_id[key]+=self.each_batch_flag_num[key]
                 batch_list.extend(get_list)
         else:
-            print(self.real_batch_num)
-            for _ in range(self.real_batch_num):
+            for _ in range(self.test_num):
                 batch_list.append(self.idx)
                 self.idx+=1
                 if self.idx>=self.test_num:
