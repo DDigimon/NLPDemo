@@ -33,13 +33,15 @@ class test_method():
 
     def test(self):
         test_num=self.data.test_num
-        self.data.batch_data_init(32, mode='test')
+        pred_list=[]
+        self.data.batch_data_init(1, mode='test')
         real_batch_num=self.data.real_batch
         for idx in tqdm(range(real_batch_num)):
-            batch_data=self.data.each_batch()
+            batch_data=self.data.each_batch(mode='test')
             feed_data=self.feed_method(batch_data)
-            pred=self.sess.run(self.model.classification_result,feed_dict=feed_data)
-            print(pred)
+            pred=self.sess.run(self.model.pred,feed_dict=feed_data)
+            pred_list.extend(pred)
+        print(pred_list)
 
 
 

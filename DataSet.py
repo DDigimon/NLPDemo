@@ -371,7 +371,7 @@ class dataset():
                 self.batch_id[key]+=self.each_batch_flag_num[key]
                 batch_list.extend(get_list)
         else:
-            for _ in range(self.test_num):
+            for _ in range(self.real_batch_num):
                 batch_list.append(self.idx)
                 self.idx+=1
                 if self.idx>=self.test_num:
@@ -405,24 +405,25 @@ class dataset():
 
         return batch_data
 
-data=dataset(100)
-# # # data.init_data()
-# # # data.read_wordvec()
-# data.read_train_data()
-# data.read_valid_data()
-# print(data.train_num,data.valid_num)
-data.load_data()
-data.load_init()
-# # print(data.train_set)
-
-# count=0
-for _ in range(1):
-    data.batch_data_init(32,mode='test')
-    # print(data.each_batch())
-    while True:
-        data.each_batch(mode='test')
-        if data.is_break==True:
-            break
-# data.read_valid_data()
-# data.read_test_data()
-# data.save_data()
+# data=dataset(100)
+# # # # data.init_data()
+# # # # data.read_wordvec()
+# # data.read_train_data()
+# # data.read_valid_data()
+# # print(data.train_num,data.valid_num)
+# data.load_data()
+# data.load_init()
+# # # print(data.train_set)
+#
+# # count=0
+# for _ in range(1):
+#     data.batch_data_init(32,mode='test')
+#     # print(data.each_batch())
+#     while True:
+#         data.each_batch(mode='test')
+#         # print(data.idx,data.test_num)
+#         if data.is_break==True:
+#             break
+# # data.read_valid_data()
+# # data.read_test_data()
+# # data.save_data()
