@@ -5,21 +5,28 @@ import init
 import yaml
 import pickle
 class dataset():
-    def __init__(self,max_length):
+    def __init__(self,config):
 
-        self.train_file='./data/train.txt'
-        self.test_file='./data/test.txt'
-        self.test_test_file='./data/test_test.txt'
-        self.valid_file='./data/valid.txt'
-        self.train_ori_file='./ori_data/train/'
-        self.test_ori_file='./ori_data/tmp_test/'
-        self.valid_ori_file='./ori_data/valid/'
-        self.wordvec_file='./data/char.txt'
+        self.config=config
 
-        self.max_id=10000
+        self.train_file=self.config['file_path']['train_path']
+        self.test_file=self.config['file_path']['test_path']
+        self.valid_file=self.config['file_path']['valid_path']
+        self.train_ori_file=self.config['file_path']['train_ori_path']
+        self.test_ori_file=self.config['file_path']['test_ori_path']
+        self.valid_ori_file=self.config['file_path']['valid_ori_path']
+        self.wordvec_file=self.config['file_path']['word_vec_path']
+
+        self.train_ready_pkl=self.config['file_path']['train_ready_pkl']
+        self.test_ready_pkl = self.config['file_path']['test_ready_pkl']
+        self.valid_ready_pkl = self.config['file_path']['valid_ready_pkl']
+        self.word_vev_pkl=self.config['file_path']['word_vec_pkl']
+        self.label_pkl=self.config['file_path']['label_pkl']
+
+        self.max_id=self.config['param']['max_pos_id']
         self.mid_id=int(self.max_id/2)
         self.embedding_size=0
-        self.max_length=max_length
+        self.max_length=config['param']['max_length']
         self.word_num=0
         self.word_set={}
         self.word_num=0
@@ -105,12 +112,10 @@ class dataset():
         return int(self.label_count[string]['id'])
 
     def init_data(self):
-        # for files in os.listdir(self.valid_file):
-        #     print(files)
-        init.GenerateTrainSet(self.test_ori_file,self.test_file)
-        init.GenerateTestSet(self.test_ori_file,self.test_test_file)
-    # def match_num(self,string):
-    #
+        init.GenerateTrainSet(self.test_ori_file,self.train_file)
+        init.GenerateTestSet(self.test_ori_file,self.test_file)
+
+
     def read_wordvec(self):
         with open(self.wordvec_file,encoding='utf-8') as f:
             for id,line in enumerate(f.readlines()):
@@ -181,10 +186,10 @@ class dataset():
                 self.train_set[self.train_num]['flag']=self._flag2id(flag)
                 self.train_num += 1
 
-        with open('./data/pickle/train.pkl','wb') as f:
+        with open(self.train_ready_pkl,'wb') as f:
             pickle.dump(self.train_set,f)
 
-        with open('./data/pickle/label.pkl','wb') as f:
+        with open(self.label_pkl,'wb') as f:
             pickle.dump(self.label_count,f)
 
     def read_valid_data(self):
@@ -222,7 +227,7 @@ class dataset():
                 self.valid_set[self.valid_num]['flag']=self._flag2id(flag)
                 self.valid_num += 1
 
-        with open('./data/pickle/valid.pkl', 'wb') as f:
+        with open(self.valid_ready_pkl, 'wb') as f:
             pickle.dump(self.valid_set, f)
 
     def read_test_data(self):
@@ -257,18 +262,25 @@ class dataset():
                 self.test_set[self.test_num]['start_sentence_real_length'] = len(start_sentence)
                 self.test_set[self.test_num]['end_sentence_real_length'] = len(end_sentence)
                 self.test_num += 1
-        with open('./data/pickle/test.pkl','wb') as f:
+        with open(self.test_ready_pkl,'wb') as f:
             pickle.dump(self.test_set,f)
 
     def save_data(self):
         with open('config.yaml',encoding='utf-8') as f:
             self.config=yaml.load(f)
-        self.config['data_info']={}
-        self.config['data_info']['train_data_num']=self.train_num
-        self.config['data_info']['label']={}
+        self.config['param']['embedding_size'] = self.embedding_size
 
-        for key in self.label_count:
-            self.config['data_info']['label'][key]=self.label_count[key]
+
+        # self.config['param']['batch_size']=32
+        # self.config['param']['epoch']=20
+        # self.config['param']['max_patient']=20
+        # self.config['param']['max_length']=100
+        #
+        # self.config['param']['hidden_size']=128
+        # self.config['param']['learning_rate']=0.01
+        # self.config['param']['filter_size']=3
+        # self.config['param']['filter_num']=5
+
 
         with open('config.yaml','w',encoding='utf-8') as f:
             yaml.dump(self.config,f)

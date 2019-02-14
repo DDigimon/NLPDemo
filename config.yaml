@@ -1,3 +1,8 @@
-data_info:
-  label: {'0': 4818, '1': 345}
-  train_data_num: 5163
+data_info: {max_id: 10000, max_length: 100}
+file_path: {label_pkl: ./data/pickle/label.pkl, test_ori_path: ./ori_data/tmp_test/,
+  test_path: ./data/test.txt, test_ready_pkl: ./data/pickle/test.pkl, train_ori_path: ./ori_data/tmp_test/,
+  train_path: ./data/train.txt, train_ready_pkl: ./data/pickle/train.pkl, valid_ori_path: ./ori_data/tmp_test/,
+  valid_path: ./data/valid.txt, valid_ready_pkl: ./data/pickle/valid.pkl, word_vec_path: ./data/pickle/word_vec.pkl,
+  word_vec_pkl: ./data/pickle/vec.pkl}
+param: {batch_size: 32, embedding_size: 0, epoch: 20, filter_num: 5, filter_size: 3,
+  hidden_size: 128, learning_rate: 0.01, max_length: 100, max_patient: 20, max_pos_id: 10000}
