@@ -17,6 +17,7 @@ class dataset():
         self.wordvec_file='./data/char.txt'
 
         self.max_id=10000
+        self.mid_id=int(self.max_id/2)
         self.embedding_size=0
         self.max_length=max_length
         self.word_num=0
@@ -45,14 +46,12 @@ class dataset():
         for id,c in enumerate(sentence):
             if id>=self.max_length:break
             if id<entity_pos:
-                # id_list.append(id-entity_pos)
-                id_list.append(1)
+                id_list.append(id-entity_pos+self.mid_id)
             elif id >=entity_pos:
                 if id<entity_pos+entity_length:
                     id_list.append(0)
                 else:
-                    # id_list.append(id-entity_pos-entity_length)
-                    id_list.append(2)
+                    id_list.append(id-entity_pos-entity_length+self.mid_id)
             id=id
         if id<self.max_length:
             for _ in range(self.max_length-id-1):
@@ -68,8 +67,7 @@ class dataset():
 
         for id,c in enumerate(end_sentence):
             if id>=self.max_length:break
-            # start_id_list.append(id+dis)
-            start_id_list.append(1)
+            start_id_list.append(id+dis+self.mid_id)
             id=id
         if id<self.max_length:
             for _ in range(self.max_length-id-1):
@@ -77,9 +75,9 @@ class dataset():
 
         for id,c in enumerate(start_sentence):
             if id>=self.max_length:break
-            # end_id_list.append(id-dis)
-            end_id_list.append(2)
+            end_id_list.append(id-dis+self.mid_id)
             id=id
+
         if id<self.max_length:
             for _ in range(self.max_length-id-1):
                 end_id_list.append(self.max_id)

@@ -115,9 +115,12 @@ data=dataset(max_length)
 
 # data.load_data()
 # data.load_init()
+# data.read_train_data()
 # data.read_valid_data()
+# data.read_test_data()
 data.load_data()
 data.load_init()
+
 
 
 print('read complite')
