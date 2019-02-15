@@ -1,23 +1,24 @@
 import tensorflow as tf
+import numpy as np
 from ModelLayers import Embedding,ConvLayer
 from PredictMethod import Classification,Jugde,LossCount,Optimizer
 
+
 class RC_model():
-    def __init__(self,max_length,embedding_size,pos_tot,pos_embedding_size,word_vec_mat,filter_size,filter_num,
-                 hidden_size,class_num,learning_rate,mode='train'):
-        self.pos_tot=pos_tot
-        self.pos_embedding_size=pos_embedding_size
-        self.embedding_size=embedding_size
-        self.max_length=100
-        self.word_vec_mat=word_vec_mat
+    def __init__(self,config,mode='train'):
+        self.pos_tot=config['param']['max_pos_id']
+        self.pos_embedding_size=config
+        self.embedding_size=config['param']['embedding_size']
+        self.max_length=config['param']['max_length']
+        self.word_vec_mat=np.load(config['path']['word_vec_np'])
 
-        self.filter_size=filter_size
-        self.filter_num=filter_num
+        self.filter_size=config['param']['filter_size']
+        self.filter_num=config['param']['filter_num']
 
-        self.hidden_size=hidden_size
-        self.learning_rate=learning_rate
+        self.hidden_size=config['param']['hidden_size']
+        self.learning_rate=config['param']['learning_rate']
 
-        self.class_num=class_num
+        self.class_num=config['param']['class_num']
 
         self.mode=mode
 

@@ -141,10 +141,10 @@ class dataset():
         self.id_set=np.row_stack((self.id_set,np.random.random(self.embedding_size)/4))
         # print(self.word_set['UK'])
 
-        with open('./data/pickle/vec.pkl','wb') as f:
+        with open(self.config['path']['word_vec_pkl'],'wb') as f:
             pickle.dump(self.word_set,f)
 
-        np.save('./data/vec',self.id_set)
+        np.save(self.config['path']['word_vec_np'],self.id_set)
 
     def read_train_data(self):
         with open(self.test_file,encoding='utf-8') as f:
@@ -286,13 +286,13 @@ class dataset():
             yaml.dump(self.config,f)
 
     def load_data(self):
-        with open('./data/pickle/train.pkl','rb') as f:
+        with open(self.config['file_path']['train_ready_pkl'],'rb') as f:
             self.train_set=pickle.load(f)
-        with open('./data/pickle/valid.pkl','rb') as f:
+        with open(self.config['file_path']['valid_ready_pkl'],'rb') as f:
             self.valid_set=pickle.load(f)
-        with open('./data/pickle/test.pkl','rb') as f:
+        with open(self.config['file_path']['test_ready_pkl'],'rb') as f:
             self.test_set=pickle.load(f)
-        with open('./data/pickle/label.pkl','rb') as f:
+        with open(self.config['file_path']['label_ready_pkl'],'rb') as f:
             self.label_count=pickle.load(f)
 
     def load_init(self):

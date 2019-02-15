@@ -46,35 +46,35 @@ class test_method():
 
 
 
-max_length=100
-embedding_size=300
-pos_tot=10000
-pos_embedding=50
-word_mat=np.load('./data/vec.npy')
-filter_size=3
-filter_num=5
-hidden_size=128
-class_num=2
-learning_rate=0.001
-batch_size=32
-epoch=1
-max_patient=2
-model_save_path='./data/models/'
-
-model=RC_model(max_length=100,embedding_size=embedding_size,pos_tot=pos_tot,pos_embedding_size=pos_embedding,
-               word_vec_mat=word_mat,filter_size=filter_size,filter_num=filter_num,hidden_size=hidden_size,
-               class_num=class_num,learning_rate=learning_rate,mode='test')
-model.build_model()
-
-data=dataset(max_length)
-
+# max_length=100
+# embedding_size=300
+# pos_tot=10000
+# pos_embedding=50
+# word_mat=np.load('./data/vec.npy')
+# filter_size=3
+# filter_num=5
+# hidden_size=128
+# class_num=2
+# learning_rate=0.001
+# batch_size=32
+# epoch=1
+# max_patient=2
+# model_save_path='./data/models/'
+#
+# model=RC_model(max_length=100,embedding_size=embedding_size,pos_tot=pos_tot,pos_embedding_size=pos_embedding,
+#                word_vec_mat=word_mat,filter_size=filter_size,filter_num=filter_num,hidden_size=hidden_size,
+#                class_num=class_num,learning_rate=learning_rate,mode='test')
+# model.build_model()
+#
+# data=dataset(max_length)
+#
+# # data.load_data()
+# # data.load_init()
+# # data.read_valid_data()
 # data.load_data()
 # data.load_init()
-# data.read_valid_data()
-data.load_data()
-data.load_init()
-
-
-print('read complite')
-test=test_method(model=model, data=data,model_save_path=model_save_path)
-test.test()
+#
+#
+# print('read complite')
+# test=test_method(model=model, data=data,model_save_path=model_save_path)
+# test.test()
