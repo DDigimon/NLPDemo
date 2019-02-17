@@ -19,6 +19,7 @@ class RC_model():
         self.learning_rate=config['param']['learning_rate']
 
         self.class_num=config['param']['class_num']
+        self.dropout_rate=config['param']['dropout_rate']
 
         self.mode=mode
 
@@ -47,9 +48,14 @@ class RC_model():
 
     def _encode(self):
         self.text_sentence=tf.concat([self.sentence1_embedding,self.sentence2_embedding],axis=1)
+        if self.mode=='train':
+            self.text_sentence=tf.nn.dropout(self.text_sentence,keep_prob=1-self.dropout_rate,name='encode_dropout')
 
     def _method(self):
-        self.text_sentence=ConvLayer.text_conv(self.text_sentence,self.filter_size,self.filter_num)
+        self.text_sentence=ConvLayer.text_conv(self.text_sentence,self.filter_size,self.filter_num,
+                                               mode='train',dropout_rate=self.dropout_rate)
+        if self.mode=='train':
+            self.text_sentence=tf.nn.dropout(self.text_sentence,keep_prob=1-self.dropout_rate,name='method_dropout')
 
     def _result(self):
         self.classification_result,self.pred=Classification.logits_classification\
