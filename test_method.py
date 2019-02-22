@@ -2,14 +2,15 @@ from DataSet import dataset
 from model import RC_model
 from tqdm import tqdm
 import tensorflow as tf
+from sklearn.metrics import confusion_matrix
 import numpy as np
 
 class test_method():
-    def __init__(self,data,model,model_save_path):
-        self.max_length=100
+    def __init__(self,data,model,config):
+        self.config=config
         self.data=data
         self.model=model
-        self.model_save_path=model_save_path
+        self.model_save_path=config['file_path']['model_save_path']
 
         self.session_config()
 
@@ -33,15 +34,18 @@ class test_method():
 
     def test(self):
         test_num=self.data.test_num
-        pred_list=[]
+        self.pred_list=[]
         self.data.batch_data_init(1, mode='test')
         real_batch_num=self.data.real_batch
         for idx in tqdm(range(real_batch_num)):
             batch_data=self.data.each_batch(mode='test')
             feed_data=self.feed_method(batch_data)
             pred=self.sess.run(self.model.pred,feed_dict=feed_data)
-            pred_list.extend(pred)
-        print(pred_list)
+            self.pred_list.extend(pred)
+
+    def judge(self):
+        confusion_matrix()
+
 
 
 

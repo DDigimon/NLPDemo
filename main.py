@@ -1,6 +1,7 @@
 import yaml
 import argparse
 from train_method import train_method
+from test_method import test_method
 from DataSet import dataset
 from model import RC_model
 
@@ -28,8 +29,12 @@ if __name__ == '__main__':
 
     model.build_model()
 
-    train=train_method(data=data,model=model,config=config)
-    train.train()
+    if arg.mode=='train':
+        train=train_method(data=data,model=model,config=config)
+        train.train()
+    else:
+        test=test_method(data=data,model=model,config=config)
+        test.test()
 
 
 

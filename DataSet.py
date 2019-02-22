@@ -11,14 +11,19 @@ class dataset():
 
         self.train_file=self.config['file_path']['train_path']
         self.test_file=self.config['file_path']['test_path']
+        self.test_local_file=self.config['file_path']['test_local_path']
         self.valid_file=self.config['file_path']['valid_path']
+
         self.train_ori_file=self.config['file_path']['train_ori_path']
         self.test_ori_file=self.config['file_path']['test_ori_path']
+        self.test_local_ori_file=self.config['file_path']['test_local_ori_path']
         self.valid_ori_file=self.config['file_path']['valid_ori_path']
+
         self.wordvec_file=self.config['file_path']['word_vec_path']
 
         self.train_ready_pkl=self.config['file_path']['train_ready_pkl']
         self.test_ready_pkl = self.config['file_path']['test_ready_pkl']
+        self.test_local_ready_pkl=self.config['file_path']['test_local_ready_pkl']
         self.valid_ready_pkl = self.config['file_path']['valid_ready_pkl']
         self.word_vev_pkl=self.config['file_path']['word_vec_pkl']
         self.label_pkl=self.config['file_path']['label_pkl']
@@ -114,6 +119,7 @@ class dataset():
     def init_data(self):
         init.GenerateTrainSet(self.test_ori_file,self.train_file)
         init.GenerateTrainSet(self.test_ori_file,self.valid_file)
+        init.GenerateTrainSet(self.test_local_ori_file,self.test_local_file)
         init.GenerateTestSet(self.test_ori_file,self.test_file)
 
 
@@ -147,129 +153,95 @@ class dataset():
 
         np.save(self.config['file_path']['word_vec_np'],self.id_set)
 
-    def read_train_data(self):
-        with open(self.train_file,encoding='utf-8') as f:
+    def data_reader(self,mode='train'):
+        data_set={}
+        data_num=0
+        file=''
+        if mode=='train':
+            file=self.train_file
+        if mode=='valid':
+            file=self.valid_file
+        if mode=='test':
+            file=self.test_file
+        if mode=='local_test':
+            file=self.test_local_file
+        with open(file,encoding='utf-8') as f:
             for line in f.readlines():
-                line=line.split('\n')[0].split('\t')
-                start_entity=line[0].split(' ')
-                end_entity=line[1].split(' ')
-                flag=line[2]
-                start_sentence=line[3].split(' ')[0]
-                end_sentence=line[3].split(' ')[1]
-                if line[2] not in self.label_count:
-                    self.label_count[line[2]]={}
-                    self.label_count[line[2]]['id']=len(self.label_count)-1
-                    self.label_count[line[2]]['value']=0
-                self.label_count[line[2]]['value']+=1
-                self.train_set[self.train_num]={}
-                self.train_set[self.train_num]['start_id']=int(start_entity[0])
-                self.train_set[self.train_num]['start_length']=int(start_entity[1])
-                self.train_set[self.train_num]['start_sentence']=self._word2id(start_sentence)
-                self.train_set[self.train_num]['end_id']=int(end_entity[0])
-                self.train_set[self.train_num]['end_length']=int(end_entity[1])
-                self.train_set[self.train_num]['end_sentence']=self._word2id(end_sentence)
-                self.train_set[self.train_num]['start_sentence_self_id']=self._pos_id(start_sentence,
+                data_set[data_num] = {}
+
+                line = line.split('\n')[0].split('\t')
+                start_entity = line[0].split(' ')
+                end_entity = line[1].split(' ')
+                if mode!='test':
+                    flag = line[2]
+                    start_sentence = line[3].split(' ')[0]
+                    end_sentence = line[3].split(' ')[1]
+                    if mode=='train':
+                        if line[2] not in self.label_count:
+                            self.label_count[line[2]] = {}
+                            self.label_count[line[2]]['id'] = len(self.label_count) - 1
+                            self.label_count[line[2]]['value'] = 0
+                        self.label_count[line[2]]['value'] += 1
+                    data_set[data_num]['flag'] = self._flag2id(flag)
+                elif mode=='test':
+                    start_sentence = line[3].split(' ')[0]
+                    end_sentence = line[3].split(' ')[1]
+
+
+                data_set[data_num]['start_id']=int(start_entity[0])
+                data_set[data_num]['start_length']=int(start_entity[1])
+                data_set[data_num]['start_sentence']=self._word2id(start_sentence)
+                data_set[data_num]['end_id']=int(end_entity[0])
+                data_set[data_num]['end_length']=int(end_entity[1])
+                data_set[data_num]['end_sentence']=self._word2id(end_sentence)
+                data_set[data_num]['start_sentence_self_id']=self._pos_id(start_sentence,
                                                                                    int(start_entity[0]),
                                                                                    int(start_entity[1]))
                 # print(self.train_set[self.train_num]['start_sentence_self_id'])
-                self.train_set[self.train_num]['end_sentence_self_id'] = self._pos_id(end_sentence,
+                data_set[data_num]['end_sentence_self_id'] = self._pos_id(end_sentence,
                                                                                      int(end_entity[0]),
                                                                                      int(end_entity[1]))
-                self.train_set[self.train_num]['start_sentence_cross_id'],\
-                self.train_set[self.train_num]['end_sentence_cross_id']=\
+                data_set[data_num]['start_sentence_cross_id'],\
+                data_set[data_num]['end_sentence_cross_id']=\
                     self._cross_id(start_sentence,end_sentence,
                                    int(start_entity[2]),int(end_entity[2]),
                                    int(start_entity[0]),int(start_entity[0]))
 
-                self.train_set[self.train_num]['start_sentence_real_length']=len(start_sentence)
-                self.train_set[self.train_num]['end_sentence_real_length']=len(end_sentence)
+                data_set[data_num]['start_sentence_real_length']=len(start_sentence)
+                data_set[data_num]['end_sentence_real_length']=len(end_sentence)
 
-                self.train_set[self.train_num]['flag']=self._flag2id(flag)
-                self.train_num += 1
+                data_num+= 1
+        if mode=='train':
+            self.train_set=data_set
+            self.train_num=data_num
+            with open(self.train_ready_pkl, 'wb') as f:
+                pickle.dump(self.train_set, f)
 
-        with open(self.train_ready_pkl,'wb') as f:
-            pickle.dump(self.train_set,f)
+            with open(self.label_pkl, 'wb') as f:
+                pickle.dump(self.label_count, f)
+        if mode=='valid':
+            self.valid_set=data_set
+            self.valid_num=data_num
+            with open(self.valid_ready_pkl, 'wb') as f:
+                pickle.dump(self.valid_set, f)
 
-        with open(self.label_pkl,'wb') as f:
-            pickle.dump(self.label_count,f)
+        if mode=='test':
+            self.test_set=data_set
+            self.test_num=data_num
+            with open(self.test_ready_pkl, 'wb') as f:
+                pickle.dump(self.test_set, f)
 
-    def read_valid_data(self):
-        with open(self.valid_file,encoding='utf-8') as f:
-            for line in f.readlines():
-                line=line.split('\n')[0].split('\t')
-                start_entity = line[0].split(' ')
-                end_entity = line[1].split(' ')
-                flag = line[2]
-                start_sentence = line[3].split(' ')[0]
-                end_sentence = line[3].split(' ')[1]
-
-                self.valid_set[self.valid_num]={}
-                self.valid_set[self.valid_num]['start_id']=int(start_entity[0])
-                self.valid_set[self.valid_num]['start_length']=int(start_entity[1])
-                self.valid_set[self.valid_num]['start_sentence']=self._word2id(start_sentence)
-                self.valid_set[self.valid_num]['end_id']=int(end_entity[0])
-                self.valid_set[self.valid_num]['end_length']=int(end_entity[1])
-                self.valid_set[self.valid_num]['end_sentence']=self._word2id(end_sentence)
-                self.valid_set[self.valid_num]['start_sentence_self_id'] = self._pos_id(start_sentence,
-                                                                                        int(start_entity[0]),
-                                                                                        int(start_entity[1]))
-                # print(self.train_set[self.train_num]['start_sentence_self_id'])
-                self.valid_set[self.valid_num]['end_sentence_self_id'] = self._pos_id(end_sentence,
-                                                                                      int(end_entity[0]),
-                                                                                      int(end_entity[1]))
-                self.valid_set[self.valid_num]['start_sentence_cross_id'], \
-                self.valid_set[self.valid_num]['end_sentence_cross_id'] = \
-                    self._cross_id(start_sentence, end_sentence,
-                                   int(start_entity[2]), int(end_entity[2]),
-                                   int(start_entity[0]), int(start_entity[0]))
-
-                self.valid_set[self.valid_num]['start_sentence_real_length'] = len(start_sentence)
-                self.valid_set[self.valid_num]['end_sentence_real_length'] = len(end_sentence)
-                self.valid_set[self.valid_num]['flag']=self._flag2id(flag)
-                self.valid_num += 1
-
-        with open(self.valid_ready_pkl, 'wb') as f:
-            pickle.dump(self.valid_set, f)
-
-    def read_test_data(self):
-        with open(self.test_file,encoding='utf-8') as f:
-            for line in f.readlines():
-                line=line.split('\n')[0].split('\t')
-                start_entity = line[0].split(' ')
-                end_entity = line[1].split(' ')
-                start_sentence = line[3].split(' ')[0]
-                end_sentence = line[3].split(' ')[1]
-
-                self.test_set[self.test_num]={}
-                self.test_set[self.test_num]['start_id']=int(start_entity[0])
-                self.test_set[self.test_num]['start_length']=int(start_entity[1])
-                self.test_set[self.test_num]['start_sentence']=self._word2id(start_sentence)
-                self.test_set[self.test_num]['end_id']=int(end_entity[0])
-                self.test_set[self.test_num]['end_length']=int(end_entity[1])
-                self.test_set[self.test_num]['end_sentence']=self._word2id(end_sentence)
-                self.test_set[self.test_num]['start_sentence_self_id'] = self._pos_id(start_sentence,
-                                                                                      int(start_entity[0]),
-                                                                                      int(start_entity[1]))
-                # print(self.train_set[self.train_num]['start_sentence_self_id'])
-                self.test_set[self.test_num]['end_sentence_self_id'] = self._pos_id(end_sentence,
-                                                                                      int(end_entity[0]),
-                                                                                      int(end_entity[1]))
-                self.test_set[self.test_num]['start_sentence_cross_id'], \
-                self.test_set[self.test_num]['end_sentence_cross_id'] = \
-                    self._cross_id(start_sentence, end_sentence,
-                                   int(start_entity[2]), int(end_entity[2]),
-                                   int(start_entity[0]), int(start_entity[0]))
-
-                self.test_set[self.test_num]['start_sentence_real_length'] = len(start_sentence)
-                self.test_set[self.test_num]['end_sentence_real_length'] = len(end_sentence)
-                self.test_num += 1
-        with open(self.test_ready_pkl,'wb') as f:
-            pickle.dump(self.test_set,f)
+        if mode=='local_test':
+            self.test_local_set = data_set
+            self.test_local_num = data_num
+            with open(self.test_local_ready_pkl, 'wb') as f:
+                pickle.dump(self.test_local_set, f)
 
     def save_data(self):
         with open('config.yaml',encoding='utf-8') as f:
             self.config=yaml.load(f)
         self.config['param']['embedding_size'] = self.embedding_size
+        self.config['param']['class_num']=len(self.label_count)
 
 
         # self.config['param']['batch_size']=32
