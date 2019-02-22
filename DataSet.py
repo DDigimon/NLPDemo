@@ -117,8 +117,8 @@ class dataset():
         return int(self.label_count[string]['id'])
 
     def init_data(self):
-        init.GenerateTrainSet(self.test_ori_file,self.train_file)
-        init.GenerateTrainSet(self.test_ori_file,self.valid_file)
+        init.GenerateTrainSet(self.train_ori_file,self.train_file)
+        init.GenerateTrainSet(self.valid_ori_file,self.valid_file)
         init.GenerateTrainSet(self.test_local_ori_file,self.test_local_file)
         init.GenerateTestSet(self.test_ori_file,self.test_file)
 

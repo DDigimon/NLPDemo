@@ -4,19 +4,23 @@ from train_method import train_method
 from test_method import test_method
 from DataSet import dataset
 from model import RC_model
+import processing
 
 def para_arg():
     paraser=argparse.ArgumentParser('NLPDemo')
     paraser.add_argument('--mode',type=str,default='local_test',help='mode choose')
+    paraser.add_argument('--IsPro',type=bool,default=True,help='if need processing')
 
     return paraser
 
 if __name__ == '__main__':
+    arg = para_arg().parse_args()
+
+    if arg.IsPro==False:
+        processing.processing()
+
     with open('config.yaml',encoding='utf-8') as config_file:
         config=yaml.load(config_file)
-
-    arg=para_arg().parse_args()
-
     data=dataset(config)
     data.load_data(arg.mode)
     data.load_init()
