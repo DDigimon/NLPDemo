@@ -133,7 +133,7 @@ def _GetString(document_dic,entity_dic,result_set,file,re_list=None,ngram=100):
         # print(pair[0])
         if entity_dic[pair[0]]['name']==entity_dic[pair[1]]['name']:continue
         count+=1
-        string_list=[]
+        string_list=['','']
         string=''
         start_id = entity_dic[pair[0]]['start']
         start_name = entity_dic[pair[0]]['name']
@@ -162,6 +162,8 @@ def _GetString(document_dic,entity_dic,result_set,file,re_list=None,ngram=100):
                 #                            end_id+len(end_name),1))
 
         dis=entity_dic[pair[0]]['start']-entity_dic[pair[1]]['start']
+        for _ in range(len(string_list)-2):
+            string_list.append('')
         if dis==0:
             string=string_list[0]+' '+string_list[0]
         else:

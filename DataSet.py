@@ -373,9 +373,6 @@ class dataset():
                     self.idx=0
                     self.is_break=True
 
-
-
-
         # find max batch length
         max_length=0
         for id in batch_list:
