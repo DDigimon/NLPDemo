@@ -32,19 +32,23 @@ class test_method():
         self.saver = tf.train.Saver()
         self.saver.restore(self.sess,self.model_save_path)
 
-    def test(self):
+    def test(self,mode):
         test_num=self.data.test_num
         self.pred_list=[]
-        self.data.batch_data_init(1, mode='test')
+        self.data.batch_data_init(1, mode=mode)
         real_batch_num=self.data.real_batch
         for idx in tqdm(range(real_batch_num)):
-            batch_data=self.data.each_batch(mode='test')
+            batch_data=self.data.each_batch(mode=mode)
             feed_data=self.feed_method(batch_data)
             pred=self.sess.run(self.model.pred,feed_dict=feed_data)
             self.pred_list.extend(pred)
 
-    def judge(self):
-        confusion_matrix()
+    def judge_local(self):
+        y_true=[]
+        for i in range(len(self.data.test_local_set)):
+            y_true.append(self.data.test_local_set[i]['flag'])
+        matrix=confusion_matrix(y_true,self.pred_list)
+        print(matrix)
 
 
 

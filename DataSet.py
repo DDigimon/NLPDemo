@@ -258,13 +258,19 @@ class dataset():
         with open('config.yaml','w',encoding='utf-8') as f:
             yaml.dump(self.config,f)
 
-    def load_data(self):
-        with open(self.config['file_path']['train_ready_pkl'],'rb') as f:
-            self.train_set=pickle.load(f)
-        with open(self.config['file_path']['valid_ready_pkl'],'rb') as f:
-            self.valid_set=pickle.load(f)
-        with open(self.config['file_path']['test_ready_pkl'],'rb') as f:
-            self.test_set=pickle.load(f)
+    def load_data(self,mode):
+        if mode=='train':
+            with open(self.config['file_path']['train_ready_pkl'],'rb') as f:
+                self.train_set=pickle.load(f)
+            with open(self.config['file_path']['valid_ready_pkl'],'rb') as f:
+                self.valid_set=pickle.load(f)
+        if mode=='test':
+            with open(self.config['file_path']['test_ready_pkl'],'rb') as f:
+                self.test_set=pickle.load(f)
+        if mode=='local_test':
+            with open(self.config['file_path']['test_local_ready_pkl'],'rb') as f:
+                self.test_local_set=pickle.load(f)
+
         with open(self.config['file_path']['label_ready_pkl'],'rb') as f:
             self.label_count=pickle.load(f)
 
@@ -283,6 +289,8 @@ class dataset():
             self.feed_data=self.valid_set
         if mode=='test':
             self.feed_data=self.test_set
+        if mode=='local_test':
+            self.feed_data=self.test_local_set
         self.is_break=False
         self.each_type_data={}
         self.each_type_data_num={}
@@ -293,7 +301,7 @@ class dataset():
         self.each_batch_flag_num = {}
 
         # for unbalance data
-        if mode!='test':
+        if mode!='test' and mode!='local_test':
             for label_key in self.label_count:
                 key=self._flag2id(label_key)
                 self.each_batch_flag_num[key] = round(self.label_count[label_key]['value'] / self.train_num * batch_size)
@@ -340,7 +348,7 @@ class dataset():
         batch_data['end_sentence_cross_id']=[]
         batch_list=[]
 
-        if mode!='test':
+        if mode!='test' and mode!='local_test':
             for id,key in enumerate(self.each_batch_flag_num.keys()):
                 get_list=[]
 
@@ -356,6 +364,7 @@ class dataset():
 
                 self.batch_id[key]+=self.each_batch_flag_num[key]
                 batch_list.extend(get_list)
+            random.shuffle(batch_list)
         else:
             for _ in range(self.real_batch_num):
                 batch_list.append(self.idx)
@@ -365,7 +374,7 @@ class dataset():
                     self.is_break=True
 
 
-        random.shuffle(batch_list)
+
 
         # find max batch length
         max_length=0

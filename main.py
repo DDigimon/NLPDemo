@@ -7,7 +7,7 @@ from model import RC_model
 
 def para_arg():
     paraser=argparse.ArgumentParser('NLPDemo')
-    paraser.add_argument('--mode',type=str,default='train',help='mode choose')
+    paraser.add_argument('--mode',type=str,default='local_test',help='mode choose')
 
     return paraser
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     arg=para_arg().parse_args()
 
     data=dataset(config)
-    data.load_data()
+    data.load_data(arg.mode)
     data.load_init()
     # print(data.label_count)
 
@@ -32,9 +32,13 @@ if __name__ == '__main__':
     if arg.mode=='train':
         train=train_method(data=data,model=model,config=config)
         train.train()
-    else:
+    elif arg.mode=='test':
         test=test_method(data=data,model=model,config=config)
-        test.test()
+        test.test(arg.mode)
+    elif arg.mode=='local_test':
+        test=test_method(data=data,model=model,config=config)
+        test.test(arg.mode)
+        test.judge_local()
 
 
 
