@@ -19,6 +19,7 @@ if __name__ == '__main__':
     data=dataset(config)
     data.load_data()
     data.load_init()
+    # print(data.label_count)
 
     if arg.mode=='train':
         model=RC_model(config,mode='train')

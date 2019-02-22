@@ -7,19 +7,19 @@ from PredictMethod import Classification,Jugde,LossCount,Optimizer
 class RC_model():
     def __init__(self,config,mode='train'):
         self.pos_tot=config['param']['max_pos_id']
-        self.pos_embedding_size=config
-        self.embedding_size=config['param']['embedding_size']
-        self.max_length=config['param']['max_length']
-        self.word_vec_mat=np.load(config['path']['word_vec_np'])
+        self.pos_embedding_size=int(config['param']['pos_embedding_size'])
+        self.embedding_size=int(config['param']['embedding_size'])
+        self.max_length=int(config['param']['max_length'])
+        self.word_vec_mat=np.load(config['file_path']['word_vec_np'])
 
-        self.filter_size=config['param']['filter_size']
-        self.filter_num=config['param']['filter_num']
+        self.filter_size=int(config['param']['filter_size'])
+        self.filter_num=int(config['param']['filter_num'])
 
-        self.hidden_size=config['param']['hidden_size']
-        self.learning_rate=config['param']['learning_rate']
+        self.hidden_size=int(config['param']['hidden_size'])
+        self.learning_rate=int(config['param']['learning_rate'])
 
-        self.class_num=config['param']['class_num']
-        self.dropout_rate=config['param']['dropout_rate']
+        self.class_num=int(config['param']['class_num'])
+        self.dropout_rate=int(config['param']['dropout_rate'])
 
         self.mode=mode
 
@@ -65,6 +65,9 @@ class RC_model():
     def _optimizer(self):
         self.train_op=Optimizer.optimizer(self.learning_rate,self.loss)
 
+    def _judge(self):
+        self.acc=Jugde.acc_count(self.pred,self.label_placeholder)
+
     def build_model(self):
         self._placehold_init()
         self._embedding()
@@ -72,6 +75,8 @@ class RC_model():
         self._method()
         self._result()
         self._optimizer()
+        if self.mode=='train':
+            self._judge()
 
 
 

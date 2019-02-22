@@ -7,12 +7,12 @@ import tensorflow as tf
 
 class train_method():
     def __init__(self, config,model,data):
-        self.epoch=config['pram']['epoch']
+        self.epoch=int(config['param']['epoch'])
         self.model=model
-        self.batch_size=config['param']['batch_size']
+        self.batch_size=int(config['param']['batch_size'])
         self.data=data
-        self.max_patient=config['param']['max_patient']
-        self.model_save_path=config['param']['model_save_path']
+        self.max_patient=int(config['param']['max_patient'])
+        self.model_save_path=config['file_path']['model_save_path']
 
         self.session_config()
 
@@ -27,6 +27,7 @@ class train_method():
                   self.model.pos2_cross_placeholder:batch_data['end_sentence_cross_id'],
 
                   self.model.label_placeholder:batch_data['flag']}
+        # print(feed_dic)
         return feed_dic
 
     def session_config(self):
@@ -44,23 +45,23 @@ class train_method():
             train_loss=0.
             min_valid_loss=1000
             current_patient=0
+            acc=0.
 
             self.data.batch_data_init(self.batch_size,mode='train')
             real_batch_num=self.data.real_batch
             for _ in tqdm(range(real_batch_num)):
                 batch_data=self.data.each_batch()
-                # print(batch_data)
-                # print(self.data.is_break)
-
                 feed_dic=self.feed_method(batch_data)
-
-                _,loss=self.sess.run([self.model.train_op,self.model.loss],feed_dict=feed_dic)
+                loss,acc=self.sess.run([self.model.loss,self.model.acc],feed_dict=feed_dic)
                 train_loss+=loss
+                acc+=acc
 
-            if real_batch_num!=0:train_loss/=float(real_batch_num)
-            valid_loss=self.evaluate()
+            if real_batch_num!=0:
+                train_loss/=float(real_batch_num)
+                acc/=float(real_batch_num)
+            valid_loss,valid_acc=self.evaluate()
 
-            print('train loss:',train_loss,'valid loss',valid_loss)
+            print('train loss:',train_loss,'train acc:',acc,'valid loss:',valid_loss,'valid acc:',valid_acc)
 
             if valid_loss<min_valid_loss:
                 min_valid_loss=valid_loss
@@ -72,18 +73,20 @@ class train_method():
 
     def evaluate(self):
         eval_loss=0.
+        acc=0.
         self.data.batch_data_init(self.batch_size,mode='valid')
         real_batch_num=self.data.real_batch
         for _ in range(real_batch_num):
             batch_data=self.data.each_batch()
-
             feed_dic=self.feed_method(batch_data)
-            loss=self.sess.run(self.model.loss,feed_dict=feed_dic)
+            loss,acc=self.sess.run([self.model.loss,self.model.acc],feed_dict=feed_dic)
             eval_loss+=loss
+            acc+=acc
 
         if real_batch_num!=0:
             eval_loss/=float(real_batch_num)
-        return eval_loss
+            acc/=float(real_batch_num)
+        return eval_loss,acc
 
 
 

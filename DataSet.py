@@ -113,6 +113,7 @@ class dataset():
 
     def init_data(self):
         init.GenerateTrainSet(self.test_ori_file,self.train_file)
+        init.GenerateTrainSet(self.test_ori_file,self.valid_file)
         init.GenerateTestSet(self.test_ori_file,self.test_file)
 
 
@@ -141,13 +142,13 @@ class dataset():
         self.id_set=np.row_stack((self.id_set,np.random.random(self.embedding_size)/4))
         # print(self.word_set['UK'])
 
-        with open(self.config['path']['word_vec_pkl'],'wb') as f:
+        with open(self.config['file_path']['word_vec_pkl'],'wb') as f:
             pickle.dump(self.word_set,f)
 
-        np.save(self.config['path']['word_vec_np'],self.id_set)
+        np.save(self.config['file_path']['word_vec_np'],self.id_set)
 
     def read_train_data(self):
-        with open(self.test_file,encoding='utf-8') as f:
+        with open(self.train_file,encoding='utf-8') as f:
             for line in f.readlines():
                 line=line.split('\n')[0].split('\t')
                 start_entity=line[0].split(' ')
@@ -193,7 +194,7 @@ class dataset():
             pickle.dump(self.label_count,f)
 
     def read_valid_data(self):
-        with open(self.test_file,encoding='utf-8') as f:
+        with open(self.valid_file,encoding='utf-8') as f:
             for line in f.readlines():
                 line=line.split('\n')[0].split('\t')
                 start_entity = line[0].split(' ')
@@ -352,6 +353,7 @@ class dataset():
         self.real_batch = int(len(self.feed_data) / self.real_batch_num)
         if len(self.feed_data) % self.real_batch_num != 0:
             self.real_batch += 1
+        # print(self.each_type_data)
 
 
 
@@ -369,12 +371,14 @@ class dataset():
         if mode!='test':
             for id,key in enumerate(self.each_batch_flag_num.keys()):
                 get_list=[]
+
                 if self.batch_id[key]+self.each_batch_flag_num[key]>=len(self.each_type_data[key]):
                     res_num=len(self.each_type_data[key])-self.batch_id[key]
                     get_list=random.sample(self.each_type_data[key],res_num)
                     self.each_batch_flag_num[key]-=res_num
                     self.batch_id[key]=0
                     self.is_break=True
+
                 for idx in range(self.batch_id[key],self.batch_id[key]+self.each_batch_flag_num[key]):
                     get_list.append(self.each_type_data[key][idx])
 
