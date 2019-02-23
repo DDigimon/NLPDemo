@@ -32,6 +32,7 @@ def _segement_txt(txt_path):
                 dic[id]=string
                 string=''
             string+=c
+        dic[id+1]=string
     return dic,file
 
 def _get_entity(ann_path):
@@ -162,8 +163,6 @@ def _GetString(document_dic,entity_dic,result_set,file,re_list=None,ngram=100):
                 #                            end_id+len(end_name),1))
 
         dis=entity_dic[pair[0]]['start']-entity_dic[pair[1]]['start']
-        for _ in range(len(string_list)-2):
-            string_list.append('')
         if dis==0:
             string=string_list[0]+' '+string_list[0]
         else:
