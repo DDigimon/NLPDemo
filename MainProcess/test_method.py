@@ -1,9 +1,7 @@
-from DataSet import dataset
-from model import RC_model
 from tqdm import tqdm
 import tensorflow as tf
 from sklearn.metrics import confusion_matrix
-import numpy as np
+
 
 class test_method():
     def __init__(self,data,model,config):

@@ -1,10 +1,11 @@
 import yaml
 import argparse
-from train_method import train_method
-from test_method import test_method
+from MainProcess.train_method import train_method
+from MainProcess.test_method import test_method
 from DataSet import dataset
-from model import RC_model
-import processing
+from Edible.model import RC_model
+from MainProcess import processing
+
 
 def para_arg():
     paraser=argparse.ArgumentParser('NLPDemo')

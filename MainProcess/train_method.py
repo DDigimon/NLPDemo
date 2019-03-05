@@ -1,6 +1,3 @@
-from model import RC_model
-from DataSet import dataset
-import numpy as np
 from tqdm import tqdm
 import tensorflow as tf
 
