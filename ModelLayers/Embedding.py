@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.contrib as tfc
 
-def word_embedding(words,word_vec,embedding_size,var_scope=None,trainable=False,use_blank_id=False):
+def word_embedding(words,embedding_size,var_scope=None,trainable=False,use_blank_id=False,word_vec=None,max_words=10000):
     '''
 
     :param words: sentence id list
@@ -14,7 +14,11 @@ def word_embedding(words,word_vec,embedding_size,var_scope=None,trainable=False,
     :return: tf variable of sentence embedding
     '''
     with tf.variable_scope(var_scope or 'word_embedding',reuse=tf.AUTO_REUSE):
-        word_embedding=tf.get_variable('word_embedding',initializer=word_vec,dtype=tf.float64,trainable=trainable)
+        if word_vec!=None:
+            word_embedding=tf.get_variable('word_embedding',initializer=word_vec,dtype=tf.float64,trainable=trainable)
+        else:
+            word_embedding=tf.get_variable('word_embedding',[max_words,embedding_size],dtype=tf.float64,initializer=tfc.layers.xavier_initializer())
+
         unk_embedding=tf.get_variable('unk_embedding',[1,embedding_size],dtype=tf.float64,
                                         initializer=tfc.layers.xavier_initializer())
         undefined_space=tf.constant(np.zeros((1,embedding_size),dtype=np.float32))
